@@ -10,6 +10,8 @@ import {
   getCardSetName,
 } from '../utils/cards'
 import './Navbar.css'
+import { FiSearch, FiShoppingCart, FiUser, FiChevronDown, FiGrid } from 'react-icons/fi'
+import Logo from '../assets/Icon_SeaTgc.png'
 
 // Mostramos todas las opciones disponibles en el menú de categorías
 const MENU_MAX_ITEMS = null
@@ -29,6 +31,7 @@ export default function Navbar() {
   const [types, setTypes] = useState([])
   const [rarities, setRarities] = useState([])
   const [showProfilePanel, setShowProfilePanel] = useState(false)
+  const [avatar, setAvatar] = useState('')
 
   const searchRef = useRef(null)
   const menuRef = useRef(null)
@@ -59,6 +62,47 @@ export default function Navbar() {
 
     fetchFilters()
   }, [])
+
+  // Cargar avatar desde el perfil guardado en localStorage
+  useEffect(() => {
+    const refreshAvatar = () => {
+      try {
+        const username = auth?.user?.username
+        let nextAvatar = ''
+        if (username) {
+          const key = `pikacards_profile_${username}`
+          const saved = localStorage.getItem(key)
+          if (saved) {
+            const parsed = JSON.parse(saved)
+            nextAvatar = parsed?.avatar || ''
+          }
+        }
+        // Fallback: buscar cualquier perfil con avatar
+        if (!nextAvatar) {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i)
+            if (k && k.startsWith('pikacards_profile_')) {
+              try {
+                const val = JSON.parse(localStorage.getItem(k))
+                if (val?.avatar) {
+                  nextAvatar = val.avatar
+                  break
+                }
+              } catch {}
+            }
+          }
+        }
+        setAvatar(nextAvatar)
+      } catch {
+        setAvatar('')
+      }
+    }
+
+    refreshAvatar()
+    const onFocus = () => refreshAvatar()
+    window.addEventListener('focus', onFocus)
+    return () => window.removeEventListener('focus', onFocus)
+  }, [auth?.user?.username])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -160,26 +204,26 @@ export default function Navbar() {
     <nav className="navbar">
       <div className="navbar__brand">
         <Link to="/" className="brand-link">
-          <span>PikaCards</span>
-          <small>TCG Retro Store</small>
+          <img src={Logo} alt="SeaTGC Logo" className="brand-logo" />
+          <div className="brand-text">
+            <span>PikaCards</span>
+            <small>TCG Retro Store</small>
+          </div>
         </Link>
       </div>
 
       <div className="navbar__controls">
-        <div className="nav-location pill-card">
-          <p>¿Dónde quieres pedir?</p>
-          <button type="button" className="pill-btn">
-            Miraflores <span aria-hidden="true">▾</span>
-          </button>
-        </div>
+        {/** Ubicación removida por solicitud del usuario **/}
 
         <div className="nav-menu" ref={menuRef}>
           <button
             type="button"
-            className="pill-btn strong"
+            className="pill-btn strong icon-btn"
+            aria-label="Categorías"
+            title="Categorías"
             onClick={() => setMenuOpen((prev) => !prev)}
           >
-            Categorías ▾
+            <FiGrid size={18} />
           </button>
           {menuOpen && (
             <div className="menu-panel">
@@ -226,8 +270,8 @@ export default function Navbar() {
               onChange={handleSearchChange}
               onFocus={() => setShowSearchPanel(true)}
             />
-            <button type="submit" className="ghost-btn">
-              🔍
+            <button type="submit" className="ghost-btn icon-btn" aria-label="Buscar">
+          <FiSearch size={26} />
             </button>
           </form>
 
@@ -268,43 +312,50 @@ export default function Navbar() {
             </div>
           )}
         </div>
-      </div>
-
-      <div className="nav-actions">
-        <Link to="/cart" className="cart-link">
-          <button type="button" className="ghost-btn cart-btn" aria-label="Carrito">
-            🛒
-            {cartCount() > 0 && (
-              <span className="cart-badge">{cartCount()}</span>
-            )}
-          </button>
-        </Link>
-        <div className="nav-profile" ref={profileRef}>
-          {isAuthenticated() ? (
-            <>
-              <button
-                type="button"
-                className="ghost-btn profile-btn"
-                onClick={() => setShowProfilePanel((prev) => !prev)}
-                aria-label="Perfil"
-              >
-                👤 {auth?.user?.username ?? 'Perfil'} ▾
-              </button>
-              {showProfilePanel && (
-                <div className="profile-panel">
-                  <button type="button" onClick={handleGoProfile}>Mi Perfil</button>
-                  <button type="button" onClick={handleGoHistory}>Historial</button>
-                  <button type="button" onClick={handleLogout}>Cerrar sesión</button>
-                </div>
+        <div className="nav-actions">
+          <Link to="/cart" className="cart-link">
+            <button type="button" className="ghost-btn icon-btn cart-btn" aria-label="Carrito">
+          <FiShoppingCart size={26} />
+              {cartCount() > 0 && (
+                <span className="cart-badge">{cartCount()}</span>
               )}
-            </>
-          ) : (
-            <Link to="/login">
-              <button type="button" className="ghost-btn" aria-label="Ingresar">
-                Login / Register
-              </button>
-            </Link>
-          )}
+            </button>
+          </Link>
+          <div className="nav-profile" ref={profileRef}>
+            {isAuthenticated() ? (
+              <>
+                <button
+                  type="button"
+                  className="ghost-btn profile-btn"
+                  onClick={() => setShowProfilePanel((prev) => !prev)}
+                  aria-label="Perfil"
+                  title={auth?.user?.username ? `Perfil de ${auth.user.username}` : 'Perfil'}
+                >
+                  {avatar ? (
+                    <span className="profile-avatar">
+                      <img src={avatar} alt="Avatar" />
+                    </span>
+                  ) : (
+            <FiUser size={26} aria-hidden="true" />
+                  )}
+            <FiChevronDown size={20} aria-hidden="true" />
+                </button>
+                {showProfilePanel && (
+                  <div className="profile-panel">
+                    <button type="button" onClick={handleGoProfile}>Mi Perfil</button>
+                    <button type="button" onClick={handleGoHistory}>Historial</button>
+                    <button type="button" onClick={handleLogout}>Cerrar sesión</button>
+                  </div>
+                )}
+              </>
+            ) : (
+              <Link to="/login">
+                <button type="button" className="ghost-btn" aria-label="Ingresar">
+                  Login / Register
+                </button>
+              </Link>
+            )}
+          </div>
         </div>
       </div>
     </nav>

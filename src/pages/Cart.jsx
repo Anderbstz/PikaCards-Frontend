@@ -27,6 +27,24 @@ export default function Cart() {
       return
     }
 
+    // Validar datos de envío en Perfil (provincia y dirección)
+    try {
+      const authKey = `pikacards_profile_${(JSON.parse(localStorage.getItem('pikacards_auth'))?.user?.username) || 'default'}`
+      const savedProfile = localStorage.getItem(authKey)
+      const parsed = savedProfile ? JSON.parse(savedProfile) : {}
+      const hasAddress = Boolean((parsed.address || '').trim())
+      const hasProvince = Boolean((parsed.province || '').trim())
+      if (!hasAddress || !hasProvince) {
+        setError('Necesitas completar tu dirección de envío (provincia y dirección) en tu Perfil antes de pagar.')
+        setTimeout(() => navigate('/profile'), 1500)
+        return
+      }
+    } catch (_) {
+      setError('No pudimos verificar tu dirección. Actualiza tu Perfil antes de pagar.')
+      setTimeout(() => navigate('/profile'), 1500)
+      return
+    }
+
     setProcessing(true)
     setError('')
 
@@ -170,6 +188,24 @@ export default function Cart() {
         <div className="cart-summary">
           <div className="summary-card">
             <h2>Resumen</h2>
+            {/* Hint si falta dirección (sin bloquear aquí, el bloqueo está en handleCheckout) */}
+            {(() => {
+              try {
+                const authKey = `pikacards_profile_${(JSON.parse(localStorage.getItem('pikacards_auth'))?.user?.username) || 'default'}`
+                const savedProfile = localStorage.getItem(authKey)
+                const parsed = savedProfile ? JSON.parse(savedProfile) : {}
+                const hasAddress = Boolean((parsed.address || '').trim())
+                const hasProvince = Boolean((parsed.province || '').trim())
+                if (!hasAddress || !hasProvince) {
+                  return (
+                    <div className="error-message" style={{ marginBottom: '0.6rem' }}>
+                      Completa tu dirección de envío en <button type="button" className="link-btn" onClick={() => navigate('/profile')}>Perfil</button>.
+                    </div>
+                  )
+                }
+              } catch {}
+              return null
+            })()}
             <div className="summary-row">
               <span>Subtotal</span>
               <span>{formatCurrency(cartTotal())}</span>
