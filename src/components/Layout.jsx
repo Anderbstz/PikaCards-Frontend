@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import Navbar from './Navbar'
+import ChatBubble from './ChatBubble'
 import './Layout.css'
 
 export default function Layout() {
@@ -20,8 +21,7 @@ export default function Layout() {
           <code>/api/cards/</code>
         </p>
       </footer>
+      <ChatBubble />
     </div>
   )
 }
-
-
