@@ -1,0 +1,36 @@
+.app-shell {
+  min-height: 100vh;
+  background: var(--beige);
+  color: var(--text-main);
+}
+
+.announcement-bar {
+  background: var(--accent);
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  padding: 0.6rem 5vw;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.main-content {
+  padding-bottom: 4rem;
+}
+
+.app-footer {
+  padding: 2rem 5vw;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.app-footer code {
+  background: #fff;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-family: monospace;
+}
+
+

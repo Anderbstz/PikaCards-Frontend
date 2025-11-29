@@ -1,0 +1,97 @@
+.card {
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 24px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.card-link {
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.card-media {
+  position: relative;
+  background: #fef7e7;
+  padding: 1.5rem;
+  min-height: 260px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-media img {
+  width: 80%;
+  height: auto;
+  object-fit: contain;
+}
+
+.card-rarity {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.3rem 0.7rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 2px solid #000;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.card-set {
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  letter-spacing: 0.08em;
+  margin: 0;
+}
+
+.card-body h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.price-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  margin-top: auto;
+}
+
+.price-tag {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.price-subtext {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.card-add-btn {
+  margin: 0 1.5rem 1.5rem;
+}
+
+
