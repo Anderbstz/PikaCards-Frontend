@@ -7,7 +7,11 @@ import CardDetail from './pages/CardDetail'
 import Search from './pages/Search'
 import Offer from './pages/Offer'
 import Cart from './pages/Cart'
+import Success from './pages/Success'
+import Cancel from './pages/Cancel'
+import History from './pages/History'
 import Login from './pages/Login'
+import Profile from './pages/Profile'
 import './App.css'
 
 function App() {
@@ -22,7 +26,11 @@ function App() {
               <Route path="offer/:slug" element={<Offer />} />
               <Route path="search" element={<Search />} />
               <Route path="cart" element={<Cart />} />
+              <Route path="success" element={<Success />} />
+              <Route path="cancel" element={<Cancel />} />
+              <Route path="history" element={<History />} />
               <Route path="login" element={<Login />} />
+              <Route path="profile" element={<Profile />} />
             </Route>
           </Routes>
         </CartProvider>

@@ -6,6 +6,6 @@ export const API_BASE_URL =
 export const API_URL = `${API_BASE_URL}/api`
 export const AUTH_URL = `${API_BASE_URL}/auth`
 export const CARDS_URL = `${API_URL}/cards`
-export const CHECKOUT_URL = `${API_URL}/cart/checkout/`
+export const CHECKOUT_URL = `${API_URL}/checkout/`
 
 

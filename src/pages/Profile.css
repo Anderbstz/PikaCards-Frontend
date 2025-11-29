@@ -1,0 +1,89 @@
+.profile-container {
+  padding: 2rem 5vw;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.profile-card {
+  background: #fff;
+  border: 3px solid #000;
+  border-radius: 24px;
+  padding: 1.5rem;
+}
+
+.profile-identity {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.avatar {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: #fff1c7;
+  border: 3px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+}
+
+.muted {
+  color: var(--text-muted);
+}
+
+.profile-actions {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.pref-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+}
+
+.pref-row label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pref-options {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pref-options label {
+  border: 2px solid #000;
+  border-radius: 999px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+}
+
+.pref-options label.is-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+.quick-links {
+  display: flex;
+  gap: 0.6rem;
+}

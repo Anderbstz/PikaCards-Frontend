@@ -17,7 +17,7 @@ const MENU_MAX_ITEMS = null
 export default function Navbar() {
   const navigate = useNavigate()
   const { cartCount } = useCart()
-  const { isAuthenticated, logout } = useAuth()
+  const { isAuthenticated, logout, auth } = useAuth()
 
   const [searchTerm, setSearchTerm] = useState('')
   const [searchResults, setSearchResults] = useState([])
@@ -28,9 +28,11 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [types, setTypes] = useState([])
   const [rarities, setRarities] = useState([])
+  const [showProfilePanel, setShowProfilePanel] = useState(false)
 
   const searchRef = useRef(null)
   const menuRef = useRef(null)
+  const profileRef = useRef(null)
   const debounceRef = useRef()
 
   useEffect(() => {
@@ -66,6 +68,9 @@ export default function Navbar() {
       if (searchRef.current && !searchRef.current.contains(event.target)) {
         setShowSearchPanel(false)
       }
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfilePanel(false)
+      }
     }
 
     document.addEventListener('mousedown', handleClickOutside)
@@ -75,6 +80,16 @@ export default function Navbar() {
   const handleLogout = () => {
     logout()
     navigate('/')
+  }
+
+  const handleGoProfile = () => {
+    navigate('/profile')
+    setShowProfilePanel(false)
+  }
+
+  const handleGoHistory = () => {
+    navigate('/history')
+    setShowProfilePanel(false)
   }
 
   const runSearch = async (value) => {
@@ -264,22 +279,33 @@ export default function Navbar() {
             )}
           </button>
         </Link>
-        {isAuthenticated() ? (
-          <button
-            type="button"
-            className="ghost-btn"
-            onClick={handleLogout}
-            aria-label="Cerrar sesión"
-          >
-            Cerrar sesión
-          </button>
-        ) : (
-          <Link to="/login">
-            <button type="button" className="ghost-btn" aria-label="Ingresar">
-              Login / Register
-            </button>
-          </Link>
-        )}
+        <div className="nav-profile" ref={profileRef}>
+          {isAuthenticated() ? (
+            <>
+              <button
+                type="button"
+                className="ghost-btn profile-btn"
+                onClick={() => setShowProfilePanel((prev) => !prev)}
+                aria-label="Perfil"
+              >
+                👤 {auth?.user?.username ?? 'Perfil'} ▾
+              </button>
+              {showProfilePanel && (
+                <div className="profile-panel">
+                  <button type="button" onClick={handleGoProfile}>Mi Perfil</button>
+                  <button type="button" onClick={handleGoHistory}>Historial</button>
+                  <button type="button" onClick={handleLogout}>Cerrar sesión</button>
+                </div>
+              )}
+            </>
+          ) : (
+            <Link to="/login">
+              <button type="button" className="ghost-btn" aria-label="Ingresar">
+                Login / Register
+              </button>
+            </Link>
+          )}
+        </div>
       </div>
     </nav>
   )

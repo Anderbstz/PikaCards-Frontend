@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useCart } from '../contexts/CartContext'
 import { useAuth } from '../contexts/AuthContext'
-import { CHECKOUT_URL } from '../config'
+import { CHECKOUT_URL, API_URL } from '../config'
 import { FALLBACK_CARD_IMAGE, formatCurrency } from '../utils/cards'
 import './Cart.css'
 
@@ -31,27 +31,53 @@ export default function Cart() {
     setError('')
 
     try {
-      // Format cart for backend
-      const cartItems = cart.map((item) => ({
-        id: item.id,
-        name: item.name,
-        quantity: item.qty,
-        price: item.price,
-        image: item.image,
-      }))
+      // Asegurar que el carrito del backend esté sincronizado con el local
+      try {
+        const res = await fetch(`${API_URL}/cart/`, {
+          headers: { ...getAuthHeaders() },
+        })
+        const serverItems = res.ok ? await res.json() : []
+        if ((!Array.isArray(serverItems) || serverItems.length === 0) && cart.length > 0) {
+          for (const item of cart) {
+            for (let i = 0; i < item.qty; i++) {
+              await fetch(`${API_URL}/cart/add/`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  ...getAuthHeaders(),
+                },
+                body: JSON.stringify({ card_id: item.id }),
+              })
+            }
+          }
+        }
+      } catch (syncError) {
+        console.error('Error sincronizando carrito con backend:', syncError)
+      }
 
+      // Solicitar checkout usando el carrito persistido en backend
       const response = await fetch(CHECKOUT_URL, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           ...getAuthHeaders(),
         },
-        body: JSON.stringify({ cart: cartItems }),
       })
 
-      const data = await response.json()
+      // Manejo robusto: si no es JSON, leer como texto para evitar "Unexpected token <"
+      const contentType = response.headers.get('content-type') || ''
+      let data
+      if (contentType.includes('application/json')) {
+        data = await response.json()
+      } else {
+        const text = await response.text()
+        data = { error: text }
+      }
 
       if (!response.ok) {
+        // Mensaje claro según estado
+        if (response.status === 401) {
+          throw new Error('Tu sesión expiró. Inicia sesión nuevamente.')
+        }
         throw new Error(data.error || 'Error al crear sesión de pago')
       }
 
