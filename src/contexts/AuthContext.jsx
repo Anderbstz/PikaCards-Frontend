@@ -14,11 +14,31 @@ export const useAuth = () => {
 
 const AUTH_STORAGE_KEY = 'pikacards_auth'
 
+const isTokenExpired = (token) => {
+  if (!token) return true
+  try {
+    const parts = token.split('.')
+    if (parts.length !== 3) return true
+    const payload = JSON.parse(atob(parts[1]))
+    if (!payload.exp) return true
+    const nowSeconds = Date.now() / 1000
+    return payload.exp < nowSeconds
+  } catch {
+    return true
+  }
+}
+
 const loadAuthFromLocalStorage = () => {
   try {
     if (typeof window === 'undefined') return null
     const stored = localStorage.getItem(AUTH_STORAGE_KEY)
-    return stored ? JSON.parse(stored) : null
+    if (!stored) return null
+    const parsed = JSON.parse(stored)
+    if (!parsed?.token || isTokenExpired(parsed.token)) {
+      localStorage.removeItem(AUTH_STORAGE_KEY)
+      return null
+    }
+    return parsed
   } catch {
     return null
   }
@@ -123,7 +143,12 @@ export const AuthProvider = ({ children }) => {
   }
 
   const isAuthenticated = () => {
-    return !!auth?.token
+    if (!auth?.token) return false
+    if (isTokenExpired(auth.token)) {
+      setAuth(null)
+      return false
+    }
+    return true
   }
 
   const getAuthHeaders = () => {

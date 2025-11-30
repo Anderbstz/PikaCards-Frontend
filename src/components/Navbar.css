@@ -38,9 +38,10 @@
 
 .navbar__controls {
   flex: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.2rem;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  column-gap: 0.6rem;
+  row-gap: 0.4rem;
   align-items: center;
 }
 
@@ -143,9 +144,9 @@
 }
 
 .nav-search {
-  flex: 0 1 520px;
-  max-width: 520px;
-  min-width: 260px;
+  width: 100%;
+  max-width: none;
+  min-width: 0;
   position: relative;
 }
 
@@ -364,6 +365,25 @@
 
   .nav-search {
     width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .navbar__controls {
+    grid-template-columns: auto auto auto;
+  }
+
+  .nav-search {
+    width: auto;
+  }
+
+  .nav-search form {
+    border-radius: 999px;
+    width: auto;
+  }
+
+  .nav-search input {
+    display: none;
   }
 }
 

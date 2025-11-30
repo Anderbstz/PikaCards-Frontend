@@ -167,9 +167,17 @@ export default function Home() {
                 <h1>{slide.title}</h1>
                 <p className="hero-subtitle">{slide.subtitle}</p>
                 <p className="hero-blurb">
-                  Incluye: {(slide.includes || []).join(', ')}.{' '}
+                  Incluye: {(slide.includes || []).join(', ')}.{" "}
                   <strong>Stock limitado — ¡aprovecha el combo!</strong>
                 </p>
+                {/* Imágenes en móvil: entre descripción y botones.
+                    Mostramos las dos cartas del combo, y el CSS se encarga
+                    de ponerlas lado a lado o apiladas según el ancho. */}
+                <div className="hero-images hero-images--mobile">
+                  {(slide.images || []).map((src, idx) => (
+                    <img key={idx} src={src} alt={`${slide.title} ${idx + 1}`} />
+                  ))}
+                </div>
                 <div className="hero-cta">
                   <span className="hero-price">{slide.priceLabel}</span>
                   <Link to={slide.offerSlug ? `/offer/${encodeURIComponent(slide.offerSlug)}` : '/'}>
@@ -179,6 +187,7 @@ export default function Home() {
                   </Link>
                 </div>
               </div>
+              {/* Imágenes en desktop: al lado derecho */}
               <div className="hero-images">
                 {(slide.images || []).map((src, idx) => (
                   <img key={idx} src={src} alt={`${slide.title} ${idx + 1}`} />

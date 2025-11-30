@@ -51,6 +51,11 @@
   gap: 0.4rem;
 }
 
+/* Bloque de imágenes extra para móvil (inicialmente oculto) */
+.hero-images--mobile {
+  display: none;
+}
+
 .hero-images img {
   width: 44%;
   height: 320px;
@@ -252,13 +257,70 @@
     grid-template-columns: 1fr;
   }
 
+  .hero-carousel {
+    overflow: visible;
+    min-height: auto;
+    padding: 1rem;
+  }
+
   .hero-card {
     grid-template-columns: 1fr;
     text-align: center;
   }
 
-.hero-cta {
-  justify-content: center;
+  .hero-cta {
+    justify-content: center;
+    gap: 0.6rem;
+  }
+
+  /* Botones del mismo tamaño en móvil */
+  .hero-cta .hero-price,
+  .hero-cta .primary-btn {
+    min-width: 130px;
+    text-align: center;
+  }
+
+  /* En móvil, usar las imágenes entre texto y botones */
+  .hero-images {
+    display: none;
+  }
+
+  .hero-images--mobile {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    margin: 0.4rem 0 0.6rem;
+  }
+
+  .hero-images--mobile img {
+    width: 44%;
+    height: 220px;
+    object-fit: contain;
+    filter: drop-shadow(0px 12px 28px rgba(0, 0, 0, 0.2));
+  }
+}
+
+/* En pantallas muy pequeñas, apilar las cartas una debajo de otra */
+@media (max-width: 520px) {
+  .hero-images--mobile {
+    flex-direction: column;
+  }
+
+  .hero-images--mobile img {
+    width: 220px;       /* tamaño visual mínimo parecido al desktop reducido */
+    max-width: 80vw;    /* para no salirse del ancho en móviles muy chicos */
+    height: auto;
+  }
+
+  .hero-cta {
+    flex-direction: column;
+  }
+
+  .hero-cta .hero-price,
+  .hero-cta .primary-btn {
+    width: 100%;
+    max-width: 260px;
   }
 }
 

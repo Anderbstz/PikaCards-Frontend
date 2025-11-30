@@ -101,9 +101,13 @@ const ChatBubble = () => {
     } catch (error) {
       console.error("Error sending message:", error);
 
-      const errmsg =
+      let errmsg =
         error.response?.data?.error ||
         "Lo siento, ocurrió un error al enviar tu mensaje.";
+
+      if (error.response?.status === 401) {
+        errmsg = "Tu sesión ha expirado. Por favor, inicia sesión de nuevo para seguir chateando.";
+      }
 
       setMessages(prev => [
         ...prev,
