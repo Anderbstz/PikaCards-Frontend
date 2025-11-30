@@ -81,6 +81,61 @@ export const AuthProvider = ({ children }) => {
     return fallback
   }
 
+  const loginWithGoogle = async (idToken) => {
+    setLoading(true)
+    try {
+      const response = await fetch(`${AUTH_URL}/google/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token: idToken }),
+      })
+
+      const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(extractErrorMessage(data, 'Error al iniciar con Google'))
+      }
+
+      const authData = {
+        user: data.user || null,
+        token: data.access,
+        refresh: data.refresh,
+      }
+
+      // Si Google trae un avatar y aún no tenemos uno guardado para este usuario,
+      // lo usamos como foto de perfil por defecto (afecta perfil y chatbot).
+      try {
+        if (typeof window !== 'undefined' && data.user?.username && data.user?.avatar) {
+          const key = `pikacards_profile_${data.user.username}`
+          const existing = localStorage.getItem(key)
+          if (!existing) {
+            localStorage.setItem(key, JSON.stringify({ avatar: data.user.avatar }))
+          } else {
+            try {
+              const parsed = JSON.parse(existing)
+              if (!parsed.avatar) {
+                localStorage.setItem(key, JSON.stringify({ ...parsed, avatar: data.user.avatar }))
+              }
+            } catch {
+              localStorage.setItem(key, JSON.stringify({ avatar: data.user.avatar }))
+            }
+          }
+        }
+      } catch {
+        // si falla, simplemente seguimos sin romper el login
+      }
+
+      setAuth(authData)
+      return { success: true }
+    } catch (error) {
+      return { success: false, error: error.message }
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const login = async (username, password) => {
     setLoading(true)
     try {
@@ -162,6 +217,7 @@ export const AuthProvider = ({ children }) => {
     auth,
     loading,
     login,
+    loginWithGoogle,
     register,
     logout,
     isAuthenticated,

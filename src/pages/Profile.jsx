@@ -87,6 +87,9 @@ export default function Profile() {
 
   const username = auth?.user?.username ?? 'Entrenador'
   const email = auth?.user?.email ?? ''
+  const firstName = auth?.user?.first_name || ''
+  const lastName = auth?.user?.last_name || ''
+  const fullName = `${firstName} ${lastName}`.trim()
   const provinces = [
     'Lima', 'Arequipa', 'Cusco', 'La Libertad', 'Piura', 'Junín', 'Lambayeque', 'Ancash', 'Ica', 'Callao', 'Puno', 'Tacna', 'Ayacucho', 'Cajamarca'
   ]
@@ -166,7 +169,8 @@ export default function Profile() {
               ) : '👤'}
             </div>
             <div>
-              <h2>{username}</h2>
+              {fullName && <h2>{fullName}</h2>}
+              <p className="muted">@{username}</p>
               {email && <p className="muted">{email}</p>}
             </div>
           </div>

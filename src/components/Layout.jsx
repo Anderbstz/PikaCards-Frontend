@@ -7,8 +7,8 @@ export default function Layout() {
   return (
     <div className="app-shell">
       <header className="announcement-bar">
-        <p>¡Entrenador! Entregamos pedidos en 30 minutos en Lima Metropolitana.</p>
-        <span>#MenoresNiUnaCarta</span>
+        <p>¡ENTRENADOR! ENTREGAMOS ENVÍOS A TODO EL PERÚ, ¿QUÉ ESPERAS?</p>
+        <span>#TGCCARDS</span>
       </header>
       <Navbar />
       <main className="main-content">

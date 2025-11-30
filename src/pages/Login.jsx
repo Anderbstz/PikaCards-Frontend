@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import './Login.css'
 
 export default function Login() {
   const navigate = useNavigate()
-  const { login, register } = useAuth()
+  const { login, register, loginWithGoogle } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [formData, setFormData] = useState({
     username: '',
@@ -14,6 +14,7 @@ export default function Login() {
   })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const googleButtonRef = useRef(null)
 
   const handleChange = (e) => {
     setFormData({
@@ -60,6 +61,72 @@ export default function Login() {
       setLoading(false)
     }
   }
+
+  // Cargar script de Google Identity y dibujar el botón
+  useEffect(() => {
+    const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID
+    console.log('Google client ID desde Vite:', clientId)
+
+    if (!clientId) {
+      // Si no hay client ID, mostramos un error claro en la UI
+      setError('Falta configurar VITE_GOOGLE_CLIENT_ID en el frontend (.env)')
+      return
+    }
+
+    if (!googleButtonRef.current) return
+
+    const existingScript = document.querySelector(
+      'script[src="https://accounts.google.com/gsi/client"]'
+    )
+
+    const onLoad = () => {
+      if (!window.google || !googleButtonRef.current) return
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: async (response) => {
+          if (!response.credential) return
+          const result = await loginWithGoogle(response.credential)
+          if (result.success) {
+            navigate('/')
+          } else if (result.error) {
+            setError(result.error)
+          }
+        },
+      })
+
+      window.google.accounts.id.renderButton(googleButtonRef.current, {
+        theme: 'outline',
+        size: 'large',
+        shape: 'pill',
+        text: 'continue_with',
+      })
+    }
+
+    if (existingScript) {
+      if (existingScript.getAttribute('data-loaded') === 'true') {
+        onLoad()
+      } else {
+        existingScript.addEventListener('load', onLoad)
+      }
+      return () => {
+        existingScript.removeEventListener('load', onLoad)
+      }
+    }
+
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => {
+      script.setAttribute('data-loaded', 'true')
+      onLoad()
+    }
+    document.body.appendChild(script)
+
+    return () => {
+      script.removeEventListener('load', onLoad)
+    }
+  }, [loginWithGoogle, navigate])
 
   return (
     <div className="auth-container">
@@ -136,6 +203,8 @@ export default function Login() {
                 : 'Registrarse'}
           </button>
         </form>
+
+        <div ref={googleButtonRef} style={{ marginTop: '1rem' }} />
 
         <Link to="/" className="back-link">
           ← Volver al inicio
